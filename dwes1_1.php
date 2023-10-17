@@ -13,7 +13,7 @@
     </h1>
     <p>
         <?php
-            echo "Pinta bien";
+            print "Pinta bien";
         ?>
     </p>
 </body>
