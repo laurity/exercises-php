@@ -11,5 +11,10 @@
             echo "Hello World"
         ?>
     </h1>
+    <p>
+        <?php
+            echo "Pinta bien";
+        ?>
+    </p>
 </body>
 </html>
