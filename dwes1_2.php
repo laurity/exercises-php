@@ -23,5 +23,78 @@
             echo $saludo.", ".$nombre.".";
         ?>
     </p>
+    <p>
+        <?php
+            if(print "Hola"){
+                echo ", caracola.";
+            }
+       ?>
+    </p>
+
+    <p>
+        <?php
+            $miEntero1 = 15;
+            $miEntero2 = 015;
+            $miEntero3 = 0x15;
+
+            echo $miEntero1 . "<br/>"; //Normal
+            echo $miEntero2 . "<br/>"; //Octal
+            echo $miEntero3 . "<br/>"; //Hexadecimal
+        ?>
+    </p>
+
+    <p>
+        <?php
+            $a = 5;
+            //$b = $a +1;
+            $b = $a++;
+            $c = ++$a;
+
+            echo "a = ". $a . "<br/>";
+            echo "b = ". $b . "<br/>";
+            echo "c = ". $c . "<br/>";
+
+        ?>
+    </p>
+
+    <p>
+        <?php
+            $a = "3.1416";
+            echo "a vale $a y es de tipo " . gettype($a)."<br/>";
+            echo "a vale \$a y es de tipo " . gettype($a); //para que no se imprima el valor de $a
+        ?>
+    </p>
+
+    <p>
+        <?php
+            $a = $b = "3.1416";
+            echo "a vale $a y es de tipo ". gettype($a). "<br/>";
+            settype($b, "float")."<br/>";
+            echo "b vale $b y es de tipo ". gettype($b). "<br/>";
+        ?>
+    </p>
+
+    <p>
+        <?php
+            echo "a vale $a y es de tipo ". gettype($a); //Comprobamos que solo se actualizó en las etiquetas de arriba.
+        ?>
+    </p>
+
+    <p>
+        <?php
+            $libros = ["Harry Potter", "The Lord of the Rings", "The Hobbit", "The Dark Tower"];
+            var_dump($libros)."<br>"; //Ver dentro de lo que hay en el array
+
+            $libros2 = [    //Estructura que hay en el array
+                0 => 'Harry Potter',
+                1 => 'The Lord of the Rings',
+                2 => 'The Hobbit',
+                3 => 'The Dark Tower'
+            ];
+            var_dump($libros2);
+
+        ?>
+    </p>
+
 </body>
 </html>
