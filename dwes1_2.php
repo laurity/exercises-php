@@ -143,10 +143,22 @@
             </li><br/>
 
         <?php endforeach; ?>
+
+        <!--Creamos una función que imprima el titulo y autor de cada libro-->
+        <?php 
+            function filtrarPorAutor ($libros){
+                foreach ($libros as $libro) {
+                    if ($libro["autor"] == "JK Rowling") {
+                        $librosFiltrados[] = $libro;
+            }
+        }
+        return $librosFiltrados;
+    }
+    var_dump(filtrarPorAutor($libros));
+            ?>
         
 
         <?php foreach ($libros as $book) :?>
-
     <!--Filtramos por titulo y fecha-->
     <?php if ($book['titulo'] == "Harry Potter") :?>
     <p>
