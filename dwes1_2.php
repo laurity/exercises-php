@@ -88,22 +88,30 @@
             [
                 "titulo" => "Harry Potter",
                 "autor" => "JK Rowling",
-                "comprar" => "https://www.google.com/"
+                "comprar" => "https://www.google.com/",
+                "anio" => "2019",
+                "editorial" => "Santander"
             ],
             [
                 "titulo" => "The Lord of the Rings",
                 "autor" => "AAAAAAA",
-                "comprar" => "http://ejemplo.com"
+                "comprar" => "http://ejemplo.com",
+                "anio" => "2023",
+                "editorial" => "Planeta"
             ],
             [
                 "titulo" => "The Hobbit",
                 "autor" => "AAAAAAA",
-                "comprar" => "http://ejemplo.com"
+                "comprar" => "http://ejemplo.com",
+                "anio" => "2013",
+                "editorial" => "Planeta"
             ],
             [
                 "titulo" => "The Dark Tower",
                 "autor" => "AAAAAAA",
-                "comprar" => "http://ejemplo.com"
+                "comprar" => "http://ejemplo.com",
+                "anio" => "1987",
+                "editorial" => "Santillana"
             ]
         ];
         var_dump($libros) . "<br>"; //Ver dentro de lo que hay en el array
@@ -122,16 +130,35 @@
     <p>
     <ul>
         <?php
-        foreach ($libros as $book) { //Recorremos el array y va imprimiendo cada elemento
+        foreach ($libros as $book) { //Recorremos el array y va imprimiendo cada elemento. 
             echo "<li>". $book["titulo"]. "</li>"."<br/>";
         }
         ?>
-        
-        <?php foreach ($libros as $libro) : ?> /
+<!--la sintaxis con el igual es un abreviado de echo-->
+        <?php foreach ($libros as $libro) : ?> 
             <li>
-            <a href="<?php echo $libro['comprar']?>"><?php echo $libro['titulo'] ?></a> 
+            <a href="<?= $libro['comprar']?>">
+            <?= $libro['titulo']?></a> 
+
             </li><br/>
+
         <?php endforeach; ?>
+        
+
+        <?php foreach ($libros as $book) :?>
+
+    <!--Filtramos por titulo y fecha-->
+    <?php if ($book['titulo'] == "Harry Potter") :?>
+    <p>
+     <?php echo "Filtramos por titulo y fecha"?>
+     </p>
+     <br>
+     <li>
+     <?= $book['titulo']?> <?=$book['anio']?>
+     </li>
+
+ <?php endif;?>
+ <?php endforeach;?>
     </ul>
     </p>
 
