@@ -88,7 +88,7 @@
             [
                 "titulo" => "Harry Potter",
                 "autor" => "JK Rowling",
-                "comprar" => "https://www.google.com/?hl=es"
+                "comprar" => "https://www.google.com/"
             ],
             [
                 "titulo" => "The Lord of the Rings",
@@ -126,10 +126,10 @@
             echo "<li>". $book["titulo"]. "</li>"."<br/>";
         }
         ?>
-
-        <?php foreach ($libros as $libro) : ?> 
+        
+        <?php foreach ($libros as $libro) : ?> /
             <li>
-            <a href="$libro['comprar']"><?php echo $libro['comprar']?></a>
+            <a href="<?php echo $libro['comprar']?>"><?php echo $libro['titulo'] ?></a> 
             </li><br/>
         <?php endforeach; ?>
     </ul>
