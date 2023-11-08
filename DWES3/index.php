@@ -1,3 +1,15 @@
+<?php
+if($_SERVER["REQUEST_METHOD"] == "POST"){
+    if($_POST["usuario"] == "pepe" and $_POST["clave"] == "1234"){
+        header("Location:bienvenido.html");
+    }
+    else{
+        $usuario = $_POST["usuario"];
+        $err = true;
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -6,41 +18,16 @@
     <title>DWES Tema 3</title>
 </head>
 <body>
-    <p>
-        <?php
-        //comunicarnos con el servidor
-        //Get envia y post envia informacion
-        if(is_null ($_GET["nombre"])){
-            echo "nombre es null<br>";
-        }
-        else{
-            echo "nombre no es null<br>";
-        }
-
-        if (empty ($_GET["nombre"])){
-            echo "está vacío <br>";
-        }
-        else{
-            
-        }
-        /*
-        empty();
-        is_null();
-            echo $_SERVER['REQUEST_METHOD']; 
-            echo "<br>";
-           // echo $_GET ["nombre"];
-           print_r($_GET); //Te dice los contenidos del metodo GET
-           echo "<br>";
-
-           echo "Hola " . $_GET["nombre"];
-           echo "<br>";
-           $edad = $_GET["edad"];
-           echo "Tiene " . $edad . " años" . "<br>";
-           echo "<br>";
-
-           echo $_GET["direccion"];*/
-        ?>
-    </p>
+    <?php
+    if (isset($err)){
+        echo "<p>Revisa el usuario o la contraseña</p>";
+    }
+    ?>
+    <form action= <?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?> method = "POST">
+        <input value="<?php if (isset($usuario)) echo $usuario; ?>" name = usuario type = "text">
+        <input name = "clave" type="password">
+        <input type="submit">
+    </form>
     
 </body>
 </html>
