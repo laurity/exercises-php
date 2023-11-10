@@ -1,14 +1,27 @@
 <?php
-if ($_SERVER['REQUEST_METHOD'] == "POST") {
-    if ($_POST["usuario"] == "adrian" and $_POST["clave"] == "1234") {
-        header("Location:bienvenido.html");
-    } else {
-        $usuario = $_POST["usuario"];
-        $err = true;
-    }
-} else {
+    function comprobar_usuario ($nombre,$clave){
+        if($nombre == "usuario" and $clave =="1234"){
+            $usu["nombre"]= "usuario";
+            $usu ["rol"]=0;
+            return $usu;
+        }elseif( $nombre == "admin"and $clave == "1234"){
+ 
+            $usu["nombre"] = "admin";
+            $usu ["rol"]= 1;
+ 
+    }else return FALSE;
 }
-?>
+if ($_SERVER['REQUEST_METHOD'] == "POST") {
+    $usu = comprobar_usuario ($_POST["usuario"], $_POST["clave"]);
+    if ($usu == false) {
+        $err = TRUE;
+    }else{
+        session_start();
+        $_SESSION["usuario"]= $_POST["usuario"];
+        header("Location: sesiones1_principal.php");
+    }
+} 
+    ?>
 <!DOCTYPE html>
 <html lang="en">
  
