@@ -34,28 +34,35 @@ function mostrarMenu($articulos)
     $pizzas = array_filter($articulos, function ($articulo) {
         return $articulo instanceof Pizza;
     });
+
     $bebidas = array_filter($articulos, function ($articulo) {
         return $articulo instanceof Bebida;
     });
+
     $otros = array_filter($articulos, function ($articulo) {
         return !($articulo instanceof Pizza) && !($articulo instanceof Bebida);
     });
+
     echo "<h1>Nuestro menú</h1>";
+
     echo "<h2>Pizzas</h2>";
     foreach ($pizzas as $item) {
         echo $item->getNombre();
         echo "<br>";
     }
+
     echo "<h2>Bebidas</h2>";
     foreach ($bebidas as $item) {
         echo $item->getNombre();
         echo "<br>";
     }
+
     echo "<h2>Otros</h2>";
     foreach ($otros as $item) {
         echo $item->getNombre();
         echo "<br>";
     }
+
 };
 
 function mostrarMasVendidos($articulos)
@@ -78,6 +85,7 @@ function mostrarMasLucrativos($articulos)
         $sumaDeA = (($a->getPrecio()* $a->getContador())-($a->getCoste()* $a->getContador()));
         return $sumaDeB - $sumaDeA;
     });
+    
     echo "<h2>¡Los más lucrativos!</h2>";
     foreach ($articulos as $item) {
         $total = (($item->getPrecio()* $item->getContador())-($item->getCoste()* $item->getContador()));

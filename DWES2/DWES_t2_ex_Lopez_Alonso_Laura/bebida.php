@@ -8,7 +8,6 @@ class Bebida extends Articulo
         parent::__construct($nombre, $coste, $precio, $contador);
         $this->alcholica = true;
     }
-    // Getters
     public function getAlcholica()
     {
         return $this->alcholica;
