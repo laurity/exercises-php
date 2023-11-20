@@ -1,45 +1,49 @@
 <?php
-// Configuración de la base de datos
-$host = 'mysql:dbname=dwes_t3;host=127.0.0.1';
-$db = 'dwes_t3';
-$user = 'root';
-$pass = '';
-
-// Intentar la conexión a la base de datos
-try {
-    $pdo = new PDO("mysql:host=$host;dbname=$db;charset=utf8", $user, $pass);
-    // Habilitar el manejo de errores de PDO
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die("Error de conexión a la base de datos: " . $e->getMessage());
-}
-
-// Verificar si el formulario de inicio de sesión ha sido enviado
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Obtener datos del formulario
-    $nombre_usuario = $_POST['nombre_usuario'];
-    $contrasena = $_POST['contrasena'];
-
-    // Consulta preparada para evitar inyecciones SQL
-    $stmt = $pdo->prepare("SELECT id, nombre_usuario, contrasena FROM usuarios WHERE nombre_usuario = ?");
-    $stmt->execute([$nombre_usuario]);
-
-    // Obtener el resultado de la consulta
-    $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    // Verificar si el usuario existe y la contraseña es correcta
-    if ($usuario && password_verify($contrasena, $usuario['contrasena'])) {
-        // Inicio de sesión exitoso
-        session_start();
-        $_SESSION['usuario_id'] = $usuario['id'];
-        $_SESSION['nombre_usuario'] = $usuario['nombre_usuario'];
-        header('Location: pagina_de_inicio.php'); // Redirigir a la página de inicio
-        exit();
-    } else {
-        // Credenciales incorrectas
-        echo "Nombre de usuario o contraseña incorrectos";
+//Nos conectamos a la base de datos
+function conectarDB(){
+    $cadena_conexion = 'mysql:dbname=dwes_t3;host=127.0.0.1';
+    $usuario = "root";
+    $clave = "";
+//Objeto de datos
+    try{
+        $db = new PDO($cadena_conexion, $usuario, $clave);
+        return $db;
+    } catch (PDOException $e){
+        echo "Error conectando a la bd: " .$e->getMessage();
     }
 }
+
+function comprobar_usuario($nombre, $clave) {
+    $conn = conectarDB();   //Guardamos aqui la conexion
+    $consulta = $conn->query("SELECT usuario, rol FROM usuarios WHERE usuario = '$nombre' AND clave = '$clave'"); 
+    // $consulta = $conn->prepare("SELECT usuario, rol FROM usuarios WHERE usuario = 
+    // $nombre AND clave = $clave");
+    // $consulta->execute();
+
+    if($consulta->rowCount() > 0){
+        $row = $consulta->fetch(PDO::FETCH_ASSOC);
+        return array("nombre" => $row["usuario"], "role" => $row["rol"]);
+    }else {
+        return FALSE;
+    }
+}
+if ($_SERVER['REQUEST_METHOD'] == "POST") {
+    $usu = comprobar_usuario ($_POST["usuario"], $_POST["clave"]);
+    if ($usu == false) {
+        $err = TRUE;}
+    
+    else{
+        session_start();
+        $_SESSION["usuario"]= $_POST["usuario"] ;
+        if ($_SESSION["usuario"]= $_POST["usuario"]=='admin' ){
+            header("Location: admin_welcome.php");
+        }
+        else {
+            header("Location: sesiones1_principal.php");
+        }
+                
+    }
+} 
 ?>
 
 <!DOCTYPE html>
@@ -51,11 +55,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <h2>Iniciar Sesión</h2>
     <form method="post" action="">
-        <label for="nombre_usuario">Nombre de Usuario:</label>
-        <input type="text" name="nombre_usuario" required>
+        <label for="usuario">Nombre de Usuario:</label>
+        <input type="text" name="usuario" required>
         <br>
-        <label for="contrasena">Contraseña:</label>
-        <input type="password" name="contrasena" required>
+        <label for="clave">Contraseña:</label>
+        <input type="password" name="clave" required>
         <br>
         <input type="submit" value="Iniciar Sesión">
     </form>
