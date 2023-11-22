@@ -79,5 +79,4 @@ $eliminar->execute();
 echo "<h1>Pizzas tras borrado</h1>";
 listarPizzas($conn);
 
-
 ?>
