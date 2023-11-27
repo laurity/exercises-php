@@ -89,9 +89,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                 // Si hay una sesión activa, mostrar la bienvenida y el botón de cierre de sesión
                 echo "<h1>Bienvenido, " . $_SESSION['usuario'] . "</h1>";
                 echo "<a href='index.php?logout=true'>Cerrar Sesión</a>";
-
-
-
+                menu();
+                echo "<a href='pedido.php'>Realizar Pedido</a>";
 
             } else {
                 // Si no hay sesión activa, mostrar el formulario de inicio de sesión
@@ -99,21 +98,56 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
                 if (isset($err)) {
                     echo "<p class='incorrect'>Usuario o contraseña incorrectos</p>";
+                    
                 }
 
                 echo "<form action='" . htmlspecialchars($_SERVER["PHP_SELF"]) . "' method='POST'>";
-                echo "<div>";
                 echo "<label for='usuario'>Usuario: </label>";
-                echo "<input value='" . (isset($usuario) ? $usuario : '') . "' name='usuario' placeholder='Usuario...'>";
-                echo "</div>";
-                echo "<div>";
+                echo "<input value='" . (isset($usuario) ? $usuario : '') . "' name='usuario' placeholder='Usuario...'>"; //pREGUNTAR LUEGO A CHATGPT QUE HACE
                 echo "<label for='clave'>Contraseña: </label>";
                 echo "<input type='password' name='clave' placeholder='Contraseña...'>";
-                echo "</div>";
                 echo "<button type='submit'>Enviar</button>";
                 echo "</form>";
-                echo "<a href='nuevo_usuario.php'>¿No tienes cuenta? Regístrate</a>";
+                
+                menu();
+                echo "<a href='nuevo_usuario.php'>Regístrese para comenzar el pedido</a>";
             }
+                
+            /************LA CARTA VA AQUÍ************************/
+            function menu(){
+                echo "<section>";
+            echo "<h1>MENÚ</h1>";
+            echo "<div class='tabla'>";
+            echo "<table border='2'>";
+            echo "<thead>";
+            echo "<tr>";
+            echo "<th>Nombre</th>";
+            echo "<th>Ingredientes</th>";
+            echo "<th>Precio</th>";
+            echo "</tr>";
+            echo "</thead>";
+            echo "<tbody>";
+
+            // Tu consulta para obtener datos de la tabla pizzas
+            $conn = conectarBD();
+            $consulta = $conn->prepare("SELECT nombre, ingredientes, precio FROM pizzas");
+            $consulta->execute();
+
+            // Iterar sobre los resultados y mostrar en la tabla
+            foreach ($consulta->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                echo "<tr>";
+                echo "<td>{$row['nombre']}</td>";
+                echo "<td>{$row['ingredientes']}</td>";
+                echo "<td>{$row['precio']}€</td>";
+                echo "</tr>";
+            }
+
+            echo "</tbody>";
+            echo "</table>";
+            echo "</div>";
+            echo "</section>";
+            }
+            
             ?>
         </div>
     </div>
