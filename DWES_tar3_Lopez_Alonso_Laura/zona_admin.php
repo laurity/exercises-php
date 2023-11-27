@@ -16,29 +16,50 @@ function conectarBD()
         return $bd;
     } catch (PDOException $e) {
         echo "Error conectar BD: " . $e->getMessage();
-        exit; // Termina la ejecución del script en caso de error
+        exit;
     }
 }
 $conn = conectarBD();
 
 function listarPizzas($conn)
 {
-    $consulta = $conn->prepare("SELECT nombre, ingredientes, precio FROM pizzas");
+    $consulta = $conn->prepare("SELECT id, nombre, ingredientes, precio, coste FROM pizzas");
     $consulta->execute();
 
     echo "<table border='1'>";
-    echo "<tr><th>Pizza</th><th>Ingredientes</th><th>Precio</th><th>Acciones Admin</th></tr>";
+    echo "<tr><th>Pizza</th><th>Ingredientes</th><th>Precio</th><th>Coste</th><th>Acciones Admin</th></tr>";
 
     foreach ($consulta->fetchAll(PDO::FETCH_ASSOC) as $row) {
         echo "<tr>";
-        echo "<td>$row[nombre]</td><td>$row[ingredientes]</td><td>$row[precio]€</td>";
-        echo "<td><button class='editar'>Editar</button>";
-        echo "<button class='borrar'>Borrar</button></td>";
+        echo "<td>$row[nombre]</td><td>$row[ingredientes]</td><td>$row[precio]€</td><td>$row[coste]€</td>";
+        echo "<td>";
+
+
+        echo "<form action='" . htmlspecialchars($_SERVER["PHP_SELF"]) . "' method='post' style='display: inline;'>";
+        echo "<input type='hidden' name='id' value='$row[id]'>";
+        echo "<button type='submit' name='editar'>Editar</button>";
+        echo "</form>";
+
+
+        echo "<form action='" . htmlspecialchars($_SERVER["PHP_SELF"]) . "' method='post' style='display: inline;'>";
+        echo "<input type='hidden' name='id' value='$row[id]'>";
+        echo "<button type='submit' name='borrar'>Borrar</button>";
+        echo "</form>";
+
+        echo "</td>";
         echo "</tr>";
     }
 
     echo "</table>";
 }
+
+if (isset($_GET['logout'])) {
+    $_SESSION = array();
+    session_destroy();
+    header("Location: index.php");
+    exit();
+}
+
 
 function crearPizza($conn)
 {
@@ -61,22 +82,34 @@ function crearPizza($conn)
         echo "Error al insertar la pizza: " . $e->getMessage();
     }
 
-    // Redirige al usuario después de procesar el formulario
     header("Location: " . $_SERVER['PHP_SELF']);
     exit;
 }
 
-// Configurar valores predeterminados para el formulario
-$nombrePizza = $costePizza = $precioPizza = $ingredientesPizza = '';
+function borrarPizza($conn, $idPizza)
+{
+    $eliminar = $conn->prepare("DELETE FROM pizzas WHERE id = :id");
+
+    $eliminar->bindParam(":id", $idPizza);
+
+    $eliminar->execute();
+}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Obtener los valores del formulario y realizar la inserción
-    crearPizza($conn);
-    // Puedes agregar un mensaje de éxito aquí si lo deseas
+    if (isset($_POST["crear"])) {
+        crearPizza($conn);
+    } elseif (isset($_POST["editar"])) {
+        //editarPizza($conn);
+    } elseif (isset($_POST["borrar"])) {
+
+        $idPizzaABorrar = $_POST["id"];
+        borrarPizza($conn, $idPizzaABorrar);
+    }
 } else {
-    // Configurar los valores predeterminados si es una carga inicial de la página
     $nombrePizza = $costePizza = $precioPizza = $ingredientesPizza = '';
 }
+
+$nombrePizza = $costePizza = $precioPizza = $ingredientesPizza = '';
 ?>
 
 <!DOCTYPE html>
@@ -86,35 +119,42 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/style-admin.css">
-    <title>Administrador <?php echo $_SESSION['nombre'] ?></title>
+    <title>Administrador
+        <?php echo $_SESSION['nombre'] ?>
+    </title>
 </head>
 
 <body>
     <div class="container">
         <div class="wrapper">
-            <h1>Bienvenido, <?php echo $_SESSION['nombre'] ?></h1>
+            <h1>Bienvenido, Admin</h1>
             <h1>Listado de Pizzas</h1>
-            <!-- Formulario de inserción de pizzas -->
             <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
                 <label for="nombrePizza">Nombre de la Pizza:</label>
-                <input value="<?php echo htmlspecialchars($nombrePizza); ?>" name="nombrePizza" placeholder="Nombre de la Pizza..." required><br>
+                <input value="<?php echo htmlspecialchars($nombrePizza); ?>" name="nombrePizza"
+                    placeholder="Nombre de la Pizza..." required><br>
 
                 <label for="costePizza">Coste de la Pizza:</label>
-                <input value="<?php echo htmlspecialchars($costePizza); ?>" name="costePizza" placeholder="Coste de la Pizza..." required><br>
+                <input value="<?php echo htmlspecialchars($costePizza); ?>" name="costePizza"
+                    placeholder="Coste de la Pizza..." required><br>
 
                 <label for="precioPizza">Precio de la Pizza:</label>
-                <input value="<?php echo htmlspecialchars($precioPizza); ?>" name="precioPizza" placeholder="Precio de la Pizza..." required><br>
+                <input value="<?php echo htmlspecialchars($precioPizza); ?>" name="precioPizza"
+                    placeholder="Precio de la Pizza..." required><br>
 
                 <label for="ingredientesPizza">Ingredientes de la Pizza:</label>
-                <input value="<?php echo htmlspecialchars($ingredientesPizza); ?>" name="ingredientesPizza" placeholder="Ingredientes de la Pizza..." required><br>
+                <input value="<?php echo htmlspecialchars($ingredientesPizza); ?>" name="ingredientesPizza"
+                    placeholder="Ingredientes de la Pizza..." required><br>
 
-                <button type="submit">Enviar</button>
+                <button type="submit" name="crear">Enviar</button>
             </form>
 
-            <!-- Listado de pizzas -->
+
             <?php
             listarPizzas($conn);
             ?>
+
+            <a href='index.php?logout=true'>Cerrar Sesión</a>
         </div>
     </div>
 

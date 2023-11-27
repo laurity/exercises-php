@@ -31,11 +31,12 @@ function anadirPizza($conn){
         $insertar->bindParam(':precio', $precioPizza);
         $insertar->bindParam(':ingredientes', $ingredientesPizza);
 
-        
         try{
             $insertar->execute();
         } catch(PDOException $e){
         }
+        
+        
     }
 }
 function mostrarPizzas($conn){
