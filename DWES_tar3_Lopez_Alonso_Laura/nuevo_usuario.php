@@ -54,31 +54,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/style-registro.css">
     <title>Nuevo Usuario</title>
 </head>
 
 <body>
-    <div class="container">
-        <div class="registro">
-            <h1>REGISTRO</h1>
-            <form method="POST">
-                    <label for="usuario">Introduzca nombre usuario:</label>
-                    <input type="text" name="usuario" placeholder="Nombre de usuario..." required>
-                    <br>
-                    <label for="clave">Introduzca clave:</label>
-                    <input type="password" name="clave" placeholder="Contraseña..."required>
-                    <br>
-                    <label for="nombre">Introduzca nombre:</label>
-                    <input type="text" name="nombre" placeholder="Nombre..."required>
-                <br>
-                    <label for="correo">Introduzca correo:</label>
-                    <input type="text" name="correo" placeholder="Introduzca correo..."required>
-                    <br>
-                <button action="submit">Enviar</button>
-            </form>
-        </div>
-    </div>
+    <?php
+    echo "<h1>REGISTRO</h1>";
+    echo "<form method='POST'>";
+    echo "<label for='usuario'>Introduzca nombre usuario:</label>";
+    echo "<input type='text' name='usuario' placeholder='Nombre de usuario...' required><br>";
+    echo "<label for='clave'>Introduzca clave:</label>";
+    echo "<input type='password' name='clave' placeholder='Contraseña...' required><br>";
+    echo "<label for='nombre'>Introduzca nombre:</label>";
+    echo "<input type='text' name='nombre' placeholder='Nombre...' required><br>";
+    echo "<label for='correo'>Introduzca correo:</label>";
+    echo "<input type='text' name='correo' placeholder='Introduzca correo...' required><br>";
+    echo "<button type='submit'>Enviar</button>";
+    echo "</form>";
+    ?>
 </body>
 
 </html>

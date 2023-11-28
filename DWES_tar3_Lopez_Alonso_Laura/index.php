@@ -67,79 +67,65 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/style-index.css">
     <title>Pizzeria</title>
 </head>
 
 <body>
-    <div class="container">
-        <div class="wrapper">
-            <?php
-            if (isset($_SESSION['usuario'])) {
+    <?php
+    if (isset($_SESSION['usuario'])) {
+        echo "<h1>Bienvenido, " . $_SESSION['nombre'] . "</h1>";
+        echo "<a href='index.php?logout=true'>Cerrar Sesión</a>";
+        menu();
+        echo "<a href='pedido.php'>Realizar Pedido</a>";
+    } else {
+        echo "<h1>Iniciar Sesión</h1>";
 
-                echo "<h1>Bienvenido, " . $_SESSION['nombre'] . "</h1>";
-                echo "<a href='index.php?logout=true'>Cerrar Sesión</a>";
-                menu();
-                echo "<a href='pedido.php'>Realizar Pedido</a>";
+        if (isset($err)) {
+            echo "<p class='incorrect'>Usuario o contraseña incorrectos</p>";
+        }
 
-            } else {
+        echo "<form action='" . htmlspecialchars($_SERVER["PHP_SELF"]) . "' method='POST'>";
+        echo "<label for='usuario'>Usuario: </label>";
+        echo "<input value='" . (isset($usuario) ? $usuario : '') . "' name='usuario' placeholder='Usuario...'required> ";
+        echo "<label for='clave'>Contraseña: </label>";
+        echo "<input type='password' name='clave' placeholder='Contraseña...' required>";
+        echo "<button type='submit'>Enviar</button>";
+        echo "</form>";
 
-                echo "<h1>Iniciar Sesión</h1>";
+        menu();
+        echo "<a href='nuevo_usuario.php'>Regístrese para comenzar el pedido</a>";
+    }
 
-                if (isset($err)) {
-                    echo "<p class='incorrect'>Usuario o contraseña incorrectos</p>";
+    /************LA CARTA VA AQUÍ************************/
+    function menu()
+    {
+        echo "<h1>MENÚ</h1>";
+        echo "<table border='2'>";
+        echo "<thead>";
+        echo "<tr>";
+        echo "<th>Nombre</th>";
+        echo "<th>Ingredientes</th>";
+        echo "<th>Precio</th>";
+        echo "</tr>";
+        echo "</thead>";
+        echo "<tbody>";
 
-                }
+        $conn = conectarBD();
+        $consulta = $conn->prepare("SELECT nombre, ingredientes, precio FROM pizzas");
+        $consulta->execute();
 
-                echo "<form action='" . htmlspecialchars($_SERVER["PHP_SELF"]) . "' method='POST'>";
-                echo "<label for='usuario'>Usuario: </label>";
-                echo "<input value='" . (isset($usuario) ? $usuario : '') . "' name='usuario' placeholder='Usuario...'required> "; 
-                echo "<label for='clave'>Contraseña: </label>";
-                echo "<input type='password' name='clave' placeholder='Contraseña...' required>";
-                echo "<button type='submit'>Enviar</button>";
-                echo "</form>";
+        foreach ($consulta->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            echo "<tr>";
+            echo "<td>{$row['nombre']}</td>";
+            echo "<td>{$row['ingredientes']}</td>";
+            echo "<td>{$row['precio']}€</td>";
+            echo "</tr>";
+        }
 
-                menu();
-                echo "<a href='nuevo_usuario.php'>Regístrese para comenzar el pedido</a>";
-            }
-
-            /************LA CARTA VA AQUÍ************************/
-            function menu()
-            {
-                echo "<section>";
-                echo "<h1>MENÚ</h1>";
-                echo "<div class='tabla'>";
-                echo "<table border='2'>";
-                echo "<thead>";
-                echo "<tr>";
-                echo "<th>Nombre</th>";
-                echo "<th>Ingredientes</th>";
-                echo "<th>Precio</th>";
-                echo "</tr>";
-                echo "</thead>";
-                echo "<tbody>";
-
-                $conn = conectarBD();
-                $consulta = $conn->prepare("SELECT nombre, ingredientes, precio FROM pizzas");
-                $consulta->execute();
-
-                foreach ($consulta->fetchAll(PDO::FETCH_ASSOC) as $row) {
-                    echo "<tr>";
-                    echo "<td>{$row['nombre']}</td>";
-                    echo "<td>{$row['ingredientes']}</td>";
-                    echo "<td>{$row['precio']}€</td>";
-                    echo "</tr>";
-                }
-
-                echo "</tbody>";
-                echo "</table>";
-                echo "</div>";
-                echo "</section>";
-            }
-
-            ?>
-        </div>
-    </div>
+        echo "</tbody>";
+        echo "</table>";
+    }
+    ?>
 </body>
 
 </html>
