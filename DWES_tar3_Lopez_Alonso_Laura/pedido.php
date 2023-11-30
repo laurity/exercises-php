@@ -26,7 +26,7 @@ function listarPizzas($conn)
     $consulta->execute();
     echo "<form method='POST'>";
     echo "<label for='pizza'>Seleccione una pizza</label>";
-    echo "<select name='pizza'>";
+    echo "<select name='pizza' min='1'>";
     echo "<option value='0'>Seleccione una pizza</option>";
     foreach ($consulta->fetchAll(PDO::FETCH_ASSOC) as $row) {
         echo "<option value='" . $row["nombre"] . "'>" . $row['nombre'] . "</option>";
@@ -42,22 +42,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST["pizza"]) && isset($_POST["cantidad"])) {
         $pizza = $_POST["pizza"];
         $cantidad = $_POST["cantidad"];
-        if (!isset($_SESSION["pedido"])) {
-            $_SESSION["pedido"] = array();
-        }
-
-        $pizzaIndex = -1;
-        foreach ($_SESSION["pedido"] as $index => $item) {
-            if ($item["pizza"] == $pizza) {
-                $pizzaIndex = $index;
-                break;
-            }
-        }
-
-        if ($pizzaIndex != -1) {
-            $_SESSION["pedido"][$pizzaIndex]["cantidad"] += $cantidad;
+        if ($pizza == '0') {
+            echo "Por favor, selecciona una pizza.";
         } else {
-            $_SESSION["pedido"][] = array("pizza" => $pizza, "cantidad" => $cantidad);
+            if (!isset($_SESSION["pedido"])) {
+                $_SESSION["pedido"] = array();
+            }
+
+            $pizzaIndex = -1;
+            foreach ($_SESSION["pedido"] as $index => $item) {
+                if ($item["pizza"] == $pizza) {
+                    $pizzaIndex = $index;
+                    break;
+                }
+            }
+
+            if ($pizzaIndex != -1) {
+                $_SESSION["pedido"][$pizzaIndex]["cantidad"] += $cantidad;
+            } else {
+                $_SESSION["pedido"][] = array("pizza" => $pizza, "cantidad" => $cantidad);
+            }
         }
     }
 }
@@ -106,6 +110,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $total += $precio * $item['cantidad'];
             $detalle_pedido .= $item['pizza'] . "; ";
         }
+        }
         echo "</table>";
         echo "<input type='submit' name='confirmar_pedido' value='Confirmar pedido'>";
         echo "</form>";
@@ -124,14 +129,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 echo "Error al insertar el pedido: ";
                 print_r($stmt->errorInfo());
             } else {
-                echo "Pedido insertado correctamente.";
+                // Redirigir al usuario a la página gracias.php
                 $_SESSION["pedido"] = array();
+                header("Location: gracias.php");
+                exit;
             }
         }
-        }
-    else {
-        echo "No hay ningún pedido en la sesión.";
-    }
+        
     ?>
 </body>
 
