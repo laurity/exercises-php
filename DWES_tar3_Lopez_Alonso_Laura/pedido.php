@@ -78,21 +78,61 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <?php listarPizzas($conn); ?>
 
     <p>Resumen de tu pedido, <?php echo $_SESSION['nombre'] ?></p>
+    
     <?php
+    // Comprobar si la sesión "pedido" está establecida y no está vacía
     if (isset($_SESSION["pedido"]) && !empty($_SESSION["pedido"])) {
+        // Comprobar si 'id' está definido en la sesión
+        if (!isset($_SESSION['id'])) {
+            echo "El usuario no está autenticado";
+            return;
+        }
+
+        echo "<form method='POST'>";
         echo "<table border='1'>";
-        echo "<tr><th>Pizza</th><th>Cantidad</th></tr>";
+        echo "<tr><th>Pizza</th><th>Cantidad</th><th>Precio</th></tr>";
+        $total = 0;
+        $detalle_pedido = "";
         foreach ($_SESSION["pedido"] as $item) {
-            echo "<tr><td>$item[pizza]</td><td>$item[cantidad]</td></tr>";
+            // Preparar una consulta SQL para obtener el precio de la pizza por su nombre
+            $sql = "SELECT precio FROM pizzas WHERE nombre = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute([$item['pizza']]);
+            $precio = $stmt->fetchColumn();
+        
+            echo "<tr><td>$item[pizza]</td><td>$item[cantidad]</td><td>$precio</td></tr>";
+            
+            // Calcular el total
+            $total += $precio * $item['cantidad'];
+            $detalle_pedido .= $item['pizza'] . "; ";
         }
         echo "</table>";
-    } else {
-        echo "<p>No hay pizzas en el pedido.</p>";
+        echo "<input type='submit' name='confirmar_pedido' value='Confirmar pedido'>";
+        echo "</form>";
+
+        // Comprobar si el formulario ha sido enviado
+        if (isset($_POST['confirmar_pedido'])) {
+            // Preparar una consulta SQL para insertar los datos en la tabla de pedidos
+            $sql = "INSERT INTO pedidos (id_cliente, fecha_pedido, detalle_pedido, total) VALUES (:id_cliente, NOW(), :detalle_pedido, :total)";
+            $stmt = $conn->prepare($sql);
+            $params = [
+                ':id_cliente' => $_SESSION['id'],
+                ':detalle_pedido' => $detalle_pedido,
+                ':total' => $total
+            ];
+            if (!$stmt->execute($params)) {
+                echo "Error al insertar el pedido: ";
+                print_r($stmt->errorInfo());
+            } else {
+                echo "Pedido insertado correctamente.";
+                $_SESSION["pedido"] = array();
+            }
+        }
+        }
+    else {
+        echo "No hay ningún pedido en la sesión.";
     }
     ?>
-    <form method="POST" action="gracias.php">
-        <button type="submit" name="confirmar_pedido">Confirmar Pedido</button>
-    </form>
 </body>
 
 </html>
