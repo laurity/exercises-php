@@ -110,7 +110,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "<input type='submit' name='confirmar_pedido' value='Confirmar pedido'>";
         echo "</form>";
 
-        // Comprobar si el formulario ha sido enviado
+        // Comprobar si el formulario ha sido enviado sin errores
         if (isset($_POST['confirmar_pedido'])) {
             // Preparar una consulta SQL para insertar los datos en la tabla de pedidos
             $sql = "INSERT INTO pedidos (id_cliente, fecha_pedido, detalle_pedido, total) VALUES (:id_cliente, NOW(), :detalle_pedido, :total)";
