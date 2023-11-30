@@ -206,5 +206,32 @@ $nombrePizza = $costePizza = $precioPizza = $ingredientesPizza = '';
 </body>
 
 </html>
+<?php
+$sql_pizzas = "SELECT nombre FROM pizzas";
+$resultado_pizzas = $conn->query($sql_pizzas);
+$pizzas = array();
 
+if ($resultado_pizzas->rowCount() > 0) {
+    while($row_pizza = $resultado_pizzas->fetch(PDO::FETCH_ASSOC)) {
+        $nombre_pizza = $row_pizza["nombre"];
+        $sql_pedidos = "SELECT COUNT(*) as cantidad FROM pedidos WHERE detalle_pedido LIKE '%$nombre_pizza%'";
+        $resultado_pedidos = $conn->query($sql_pedidos);
+        $row_pedidos = $resultado_pedidos->fetch(PDO::FETCH_ASSOC);
+        $cantidad = $row_pedidos['cantidad'];
+        $pizzas[$nombre_pizza] = $cantidad;
+    }
+} else {
+    echo "No se encontraron pizzas";
+}
 
+arsort($pizzas);
+
+echo "<table>";
+echo "<tr><th>Pizza</th><th>Vendida</th></tr>";
+
+foreach($pizzas as $pizza => $cantidad) {
+    echo "<tr><td>" . $pizza . "</td><td>" . $cantidad . " veces</td></tr>";
+}
+
+echo "</table>";
+?>

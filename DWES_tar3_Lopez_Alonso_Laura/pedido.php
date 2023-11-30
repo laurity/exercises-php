@@ -84,9 +84,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <p>Resumen de tu pedido, <?php echo $_SESSION['nombre'] ?></p>
     
     <?php
-    // Comprobar si la sesión "pedido" está establecida y no está vacía
     if (isset($_SESSION["pedido"]) && !empty($_SESSION["pedido"])) {
-        // Comprobar si 'id' está definido en la sesión
         if (!isset($_SESSION['id'])) {
             echo "El usuario no está autenticado";
             return;
@@ -98,7 +96,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $total = 0;
         $detalle_pedido = "";
         foreach ($_SESSION["pedido"] as $item) {
-            // Preparar una consulta SQL para obtener el precio de la pizza por su nombre
             $sql = "SELECT precio FROM pizzas WHERE nombre = ?";
             $stmt = $conn->prepare($sql);
             $stmt->execute([$item['pizza']]);
@@ -106,7 +103,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
             echo "<tr><td>$item[pizza]</td><td>$item[cantidad]</td><td>$precio</td></tr>";
             
-            // Calcular el total
             $total += $precio * $item['cantidad'];
             $detalle_pedido .= $item['pizza'] . "; ";
         }
@@ -115,9 +111,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "<input type='submit' name='confirmar_pedido' value='Confirmar pedido'>";
         echo "</form>";
 
-        // Comprobar si el formulario ha sido enviado sin errores
         if (isset($_POST['confirmar_pedido'])) {
-            // Preparar una consulta SQL para insertar los datos en la tabla de pedidos
             $sql = "INSERT INTO pedidos (id_cliente, fecha_pedido, detalle_pedido, total) VALUES (:id_cliente, NOW(), :detalle_pedido, :total)";
             $stmt = $conn->prepare($sql);
             $params = [
@@ -129,8 +123,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 echo "Error al insertar el pedido: ";
                 print_r($stmt->errorInfo());
             } else {
-                // Redirigir al usuario a la página gracias.php
-                $_SESSION["pedido"] = array();
+                $_SESSION["pedido"] = array(); // Vaciamos el pedido
                 header("Location: gracias.php");
                 exit;
             }
